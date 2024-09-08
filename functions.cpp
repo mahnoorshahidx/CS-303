@@ -37,7 +37,8 @@ int *readFile(const char *filename, int &size) {
   return array1;  // returning the array
 }
 
-// function to check if an integer exists in the array, returns index if found, -1 otherwise
+// function to check if an integer exists in the array, returns index if found,
+// -1 otherwise
 int findInteger(int *array1, int size, int num) {
   for (int i = 0; i < size; i++) { // iterating through the array
     if (array1[i] == num) {        // checking if current element matches num
@@ -47,23 +48,52 @@ int findInteger(int *array1, int size, int num) {
   return -1; // returning -1 if num is not found
 }
 
-// function to modify the value at a given index and return the old and new value
-pair<int, int> modifyInteger(int *array1, int index, int newVal) {
-  int oldVal = array1[index]; // storing old value at index
-  array1[index] = newVal;     // updating array element with new value
-  return {oldVal, newVal};    // returning a pair of old and new values
+// function to modify the value at a given index and return the old and new
+// value
+pair<int, int> modifyInteger(int *array1, int size, int index, int newVal) {
+  try {
+    if (index < 0 || index >= size) {
+      throw out_of_range("Index out of range"); // throwing an exception if the
+                                                // index is invalid
+    }
+
+    int oldVal = array1[index]; // storing old value at index
+    array1[index] = newVal;     // updating array element with new value
+    return {oldVal, newVal};    // returning a pair of old and new values
+  } catch (const out_of_range &e) {
+    cerr << "Error: " << e.what() << endl;
+    return {-1, -1}; // returning a pair of -1 to indicate failure
+  } catch (const invalid_argument &e) {
+    cerr << "Invalid input: " << e.what() << endl;
+    return {-1, -1}; // catching invalid input exceptions
+  } catch (...) {
+    cerr << "An unknown error occurred" << endl;
+    return {-1, -1}; // catching any other exceptions
+  }
 }
 
 // function to add a new integer to the end of the array
 int *addInteger(int *array1, int &size, int newVal) {
-  int *newArray = new int[size + 1]; // allocating new array with additional space
-  for (int i = 0; i < size; i++) {   // copying old array elements to new array
-    newArray[i] = array1[i];
+  try {
+    int *newArray =
+        new int[size + 1]; // allocating new array with additional space
+    for (int i = 0; i < size; i++) { // copying old array elements to new array
+      newArray[i] = array1[i];
+    }
+    newArray[size] = newVal; // adding the new value to the end of the new array
+    size++;                  // increase the size of the array
+    delete[] array1;         // freeing old array memory
+    return newArray;         // returning pointer to the new array
+  } catch (const bad_alloc &e) {
+    cerr << "Memory allocation failed: " << e.what() << endl;
+    return nullptr; // returning nullptr to indicate failure
+  } catch (const invalid_argument &e) {
+    cerr << "Invalid input: " << e.what() << endl;
+    return nullptr; // catching invalid input exceptions
+  } catch (...) {
+    cerr << "An unknown error occurred" << endl;
+    return nullptr; // catching any other exceptions
   }
-  newArray[size] = newVal; // adding the new value to the end of the new array
-  size++;                  // increaseing the size of the array
-  delete[] array1;         // freeing old array memory
-  return newArray;         // returning pointer to the new array
 }
 
 // function to remove an integer from the array by index or set it to 0
@@ -84,4 +114,14 @@ int *removeIntegerOrSetZero(int *array1, int &size, int index, bool remove) {
     array1[index] = 0; // setting the element at index to 0
     return array1;     // returnning the original array
   }
+}
+
+// function to check if a number already exists in the array
+bool isDuplicate(int* array, int size, int newNumber) {
+    for (int i = 0; i < size; ++i) {
+        if (array[i] == newNumber) {
+            return true; // the number already exists in the array
+        }
+    }
+    return false; // the number is not a duplicate
 }
